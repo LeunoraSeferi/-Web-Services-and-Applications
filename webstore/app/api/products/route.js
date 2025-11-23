@@ -7,13 +7,13 @@ import {
 // --------------------------------------------
 // GET /api/products
 // Public endpoint (no authentication required)
-// Fetches all products with category, brand, size, color, gender info
+// Fetches all products with category, brand, size, color, gender info,images
 // --------------------------------------------
 export async function GET() {
   try {
-    // Query all products with joined relational tables
     const result = await pool.query(`
       SELECT p.id, p.name, p.description, p.price, p.quantity,
+             p.image_url,
              c.name AS category, 
              b.name AS brand, 
              s.size, 
@@ -28,6 +28,7 @@ export async function GET() {
       ORDER BY p.id;
     `);
 
+ 
     // Return product list
     return Response.json(result.rows);
   } catch (err) {

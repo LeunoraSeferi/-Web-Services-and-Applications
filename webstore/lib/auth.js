@@ -56,3 +56,39 @@ export function requireProductAccess(user) {
     throw new Error("Access denied: You cannot manage products");
   }
 }
+
+/* ============================================================
+   GENERIC ROLE CHECKER (REQUIRED FOR MANY API ROUTES)
+   - Verifies token
+   - Checks if "user.role" exists in allowedRoles
+   - Works with API Routes exactly as needed
+   ============================================================ */
+export function requireRole(request, allowedRoles = []) {
+  try {
+    // Decode JWT token
+    const user = verifyToken(request);
+
+    // Check if user's role is allowed
+    if (!allowedRoles.includes(user.role)) {
+      return {
+        error: true,
+        response: Response.json(
+          { error: "Access denied: insufficient privileges" },
+          { status: 403 }
+        )
+      };
+    }
+
+    // User is allowed
+    return { error: false, user };
+
+  } catch (err) {
+    return {
+      error: true,
+      response: Response.json(
+        { error: "Invalid or missing token" },
+        { status: 401 }
+      )
+    };
+  }
+}

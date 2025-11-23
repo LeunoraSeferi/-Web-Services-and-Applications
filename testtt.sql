@@ -132,4 +132,116 @@ WHERE LOWER(b.name) = 'nike';
 
 SELECT * FROM products WHERE id = 2;
 
+select * from products;
+
+UPDATE products
+SET image_url = '/images/adidaswindbreaker.jpg'
+WHERE id = 3;
+
+UPDATE products
+SET image_url = '/images/adidaswindbreaker.jpg'
+WHERE id = 13;
+
+
+UPDATE products
+SET image_url = '/images/hmwintercoat.jpg'
+WHERE id = 4;
+
+
+UPDATE products
+SET image_url = '/images/hmwintercoat.jpg'
+WHERE id = 14;
+
+
+UPDATE products
+SET image_url = '/images/hmwintercoat.jpg'
+WHERE id = 22;
+
+UPDATE products
+SET image_url = '/images/hmwintercoat.jpg'
+WHERE id = 30;
+
+UPDATE products
+SET image_url = '/images/hmwintercoat.jpg'
+WHERE id = 32;
+
+
+UPDATE products
+SET image_url = '/images/nikecap.jpg'
+WHERE id = 5;
+
+
+UPDATE products
+SET image_url = '/images/nikecap.jpg'
+WHERE id = 15;
+
+
+UPDATE products
+SET image_url = '/images/nikecap.jpg'
+WHERE id = 23;
+
+
+UPDATE products
+SET image_url = '/images/nikecap.jpg'
+WHERE id = 31;
+
+
+UPDATE products
+SET image_url = '/images/nikecap.jpg'
+WHERE id = 33;
+
+
+UPDATE products
+SET image_url = '/images/adidassocks.jpeg'
+WHERE id = 6;
+
+UPDATE products
+SET image_url = '/images/adidassocks.jpeg'
+WHERE id = 16;
+
+UPDATE products
+SET image_url = '/images/adidassocks.jpeg'
+WHERE id = 24;
+
+UPDATE products
+SET image_url = '/images/Hmchinos.jpeg'
+WHERE id = 7;
+
+UPDATE products
+SET image_url = '/images/Hmchinos.jpeg'
+WHERE id = 17;
+
+UPDATE products
+SET image_url = '/images/Hmchinos.jpeg'
+WHERE id = 25;
+
+UPDATE products
+SET image_url = '/images/zaraleggings.jpg'
+WHERE id = 8;
+
+UPDATE products
+SET image_url = '/images/zaraleggings.jpg'
+WHERE id = 18;
+
+UPDATE products
+SET image_url = '/images/zaraleggings.jpg'
+WHERE id = 26;
+
+UPDATE products
+SET image_url = '/images/adidaspoloshirt.jpg'
+WHERE id = 9;
+
+UPDATE products
+SET image_url = '/images/adidaspoloshirt.jpg'
+WHERE id = 19;
+
+UPDATE products
+SET image_url = '/images/adidaspoloshirt.jpg'
+WHERE id = 27;
+
+
+
+
+
+
 
