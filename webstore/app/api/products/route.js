@@ -1,8 +1,8 @@
 // app/api/products/route.js
 import pool from "@/lib/db";
-import { requireRole } from "@/lib/auth";
+import { verifyToken, requireProductAccess } from "@/lib/auth";
 
-// GET /api/products
+// GET /api/products (public or protected — your choice)
 export async function GET() {
   try {
     const result = await pool.query(`
@@ -18,54 +18,42 @@ export async function GET() {
     `);
 
     return Response.json(result.rows);
+
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 });
   }
 }
 
-// POST /api/products
+// POST /api/products (Admin, Advanced, Simple)
 export async function POST(request) {
-  const roleCheck = requireRole(request, [
-    "admin",
-    "advanced_user",
-    "simple_user",
-  ]);
-
-  if (roleCheck.error) return roleCheck.response;
-
   try {
-    const {
-      name,
-      description,
-      price,
-      quantity,
-      category_id,
-      brand_id,
-      size_id,
-      color_id,
-      gender_id,
-    } = await request.json();
+    const user = verifyToken(request);
+    requireProductAccess(user);
 
-    const result = await pool.query(
-      `INSERT INTO products
-      (name, description, price, quantity, category_id, brand_id, size_id, color_id, gender_id)
+    const data = await request.json();
+
+    const sql = `
+      INSERT INTO products (name, description, price, quantity, category_id, brand_id, size_id, color_id, gender_id)
       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
-      RETURNING *`,
-      [
-        name,
-        description,
-        price,
-        quantity,
-        category_id,
-        brand_id,
-        size_id,
-        color_id,
-        gender_id,
-      ]
-    );
+      RETURNING *
+    `;
 
-    return Response.json(result.rows[0], { status: 201 });
+    const values = [
+      data.name,
+      data.description,
+      data.price,
+      data.quantity,
+      data.category_id,
+      data.brand_id,
+      data.size_id,
+      data.color_id,
+      data.gender_id,
+    ];
+
+    const result = await pool.query(sql, values);
+    return Response.json(result.rows[0]);
+
   } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+    return Response.json({ error: err.message }, { status: 403 });
   }
 }

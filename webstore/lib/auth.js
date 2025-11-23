@@ -1,30 +1,38 @@
 import jwt from "jsonwebtoken";
 
-export function getUserFromRequest(request) {
-  const header = request.headers.get("authorization") || "";
-  const [type, token] = header.split(" ");
+/* VERIFY TOKEN FROM REQUEST */
+export function verifyToken(request) {
+  const auth = request.headers.get("authorization");
 
-  if (type !== "Bearer" || !token) return null;
+  if (!auth || !auth.startsWith("Bearer ")) {
+    throw new Error("Missing or invalid token");
+  }
 
-  try {
-    return jwt.verify(token, process.env.JWT_SECRET);
-  } catch {
-    return null;
+  const token = auth.split(" ")[1];
+  return jwt.verify(token, process.env.JWT_SECRET);
+}
+
+/* ADMIN ONLY */
+export function requireAdmin(user) {
+  if (user.role !== "admin") {
+    throw new Error("Access denied: Admins only");
   }
 }
 
-export function requireRole(request, roles) {
-  const user = getUserFromRequest(request);
-
-  if (!user || !roles.includes(user.role)) {
-    return {
-      error: true,
-      response: new Response(
-        JSON.stringify({ message: "Forbidden" }),
-        { status: 403 }
-      ),
-    };
+/* ADMIN or ADVANCED_USER */
+export function requireAdvancedOrAdmin(user) {
+  if (user.role !== "admin" && user.role !== "advanced_user") {
+    throw new Error("Access denied: Not enough privileges");
   }
+}
 
-  return { error: false, user };
+/* PRODUCT ACCESS (ALL ROLES) */
+export function requireProductAccess(user) {
+  if (
+    user.role !== "admin" &&
+    user.role !== "advanced_user" &&
+    user.role !== "simple_user"
+  ) {
+    throw new Error("Access denied: You cannot manage products");
+  }
 }

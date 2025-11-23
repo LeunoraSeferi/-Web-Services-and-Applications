@@ -1,13 +1,18 @@
 import pool from "@/lib/db";
 
-// GET /api/products/:id/quantity
 export async function GET(request, context) {
-  const { id } = await context.params;
-
   try {
+    // IMPORTANT FIX
+    const { id } = await context.params;
+
+    console.log("RAW ID:", id);
+
+    const cleanId = id?.trim();
+    console.log("CLEAN ID:", cleanId);
+
     const sql = `
       SELECT 
-        p.id, 
+        p.id,
         p.name,
         p.quantity AS initial_quantity,
         COALESCE(SUM(oi.quantity), 0) AS sold_quantity,
@@ -18,17 +23,16 @@ export async function GET(request, context) {
       GROUP BY p.id, p.name, p.quantity
     `;
 
-    const result = await pool.query(sql, [id]);
+    const result = await pool.query(sql, [cleanId]);
 
     if (result.rows.length === 0) {
-      return Response.json(
-        { message: "Product not found" },
-        { status: 404 }
-      );
+      return Response.json({ message: "Product not found" }, { status: 404 });
     }
 
     return Response.json(result.rows[0]);
+
   } catch (err) {
+    console.error("ERROR:", err);
     return Response.json({ error: err.message }, { status: 500 });
   }
 }
