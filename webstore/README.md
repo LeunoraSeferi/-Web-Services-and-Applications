@@ -1,79 +1,104 @@
-WebStore – RESTful Web Services & Applications Project
-This project is an e-commerce WebStore backend built with Next.js (App Router) and PostgreSQL.
-It exposes a set of RESTful APIs for:
-•	Product management (CRUD, search, real-time stock, discounts)
-•	Order processing and order status updates
-•	User management with roles (admin, advanced_user, simple_user)
-•	Authentication with JWT tokens
-•	Sales reports (daily, monthly, top-selling products)
-The project is designed for the *Web Services & Applications* course and follows the assignment requirements:  
-**RESTful APIs + database design + security + reports + Postman tests + documentation**.
-TECH STACK:
-•	Backend Framework: Next.js (Node.js, App Router, /app/api)
-•	Database: PostgreSQL (pgAdmin4)
-•	Authentication: JWT (JSON Web Token)
-•	Security Features:
-o	Password hashing using PostgreSQL crypt()
-o	Role-Based Access Control (RBAC)
-•	Testing: Postman
+-- WebStore – RESTful Web Services & Applications Project
 
+Author: Leunora Seferi
+Course: Web Services & Applications (SEEU)
 
+WebStore is a complete e-commerce backend and frontend system built using Next.js (App Router) and PostgreSQL. It includes secure authentication, role-based authorization, product management, orders, discounts, real-time stock calculations, and sales reporting.
 
- SETUP INSTRUCTIONS:
-1️.Clone the Repository
-git clone https://github.com/LeunoraSeferi/-Web-Services-and-Applications.git
-2️.Navigate to the Project
-cd webstore
-3️.Install Dependencies
-npm install
-4️. Create Environment File
-Create .env.local:
-DATABASE_URL=postgresql://user:password@localhost:5432/webstore
-JWT_SECRET=your_secret_key_here
-5️.Run Database SQL Scripts
-Import the SQL files using pgAdmin4:
-•	clients.sql
-•	clientsorders.sql
-•	productstable.sql
-•	discounts.sql
-•	insert.sql
-•	pass.sql
-•	report.sql
-•	tables.sql
-•	webstoredb.sql
-6️. Start the Development Server
-npm run dev
+--Key Features
 
+Authentication & Security
+The project uses JWT-based login, password hashing, and role-based access control. Users are assigned one of three roles: admin, advanced_user, or simple_user. Each role has different permissions.
 
- TESTING:
-All API endpoints were fully tested using Postman, including:
-•	Authentication (login)
-•	Role-protected routes
-•	CRUD for products
-•	Discounts
-•	Orders
-•	Reports
-•	Advanced product search
-CODE QUALITY HIGHLIGHTS:
-✔ Clean and well-organized folder structure
-✔ Authentication isolated in /lib/auth.js
-✔ Database connection isolated in /lib/db.js
-✔ APIs grouped by module
-✔ Comments included in all major files
-✔ Security considerations applied throughout
+Product Management
+You can create, update, delete, and search products. Products contain detailed attributes such as category, brand, size, color, gender, price, and quantity. The system also supports scheduled discounts and calculates stock in real time based on ordered quantities.
 
+Orders System
+Users can place multi-item orders. Each order includes pricing details, quantities, and follows a clear status workflow (Pending → Completed). All order items are stored separately for accuracy.
 
- ACADEMIC REQUIREMENTS FULFILLED:
-This project fully satisfies all major requirements of the Web Services & Applications course:
-•	Database design
-•	 RESTful API development
-•	Authentication (JWT)
-•	RBAC (admin, advanced_user, simple_user)
-•	 Advanced search
-•	 Real-time stock management
-•	Sales reporting
-•	Postman testing
-•	 Clean code standards
-•	 Full documentation
-•	 GitHub submission
+Reports
+The system generates daily earnings, monthly summaries, and identifies top-selling products using aggregated SQL queries.
 
+REST API
+Over 40 endpoints are implemented following REST principles. All endpoints accept JSON input and return JSON output. Role-based access prevents unauthorized operations.
+
+-- System Architecture
+
+The application uses Next.js App Router. All backend API routes are inside /app/api/, and all frontend pages are inside /app/.
+This setup allows the backend and frontend to work together inside one project.
+
+PostgreSQL is used as the primary database. The system uses a fully normalized relational schema, including tables for users, roles, products, clients, orders, order_items, categories, brands, sizes, colors, gender, discounts, and reports.
+
+-- Database Overview
+
+The database contains 13 tables that store all information required to run an e-commerce platform.
+Lookup tables are used for categories, brands, sizes, colors, and gender.
+Core business tables include products, orders, and order_items.
+Authentication data is stored in users and roles.
+The discounts table handles active and scheduled promotions.
+The reports table stores computed analytics.
+
+Foreign key relationships ensure data consistency, prevent duplicate values, and guarantee clean relational structure.
+
+-- API Overview (Short Explanation)
+
+Authentication
+The login endpoint returns a JWT token which must be provided for all protected routes.
+
+Products API
+Includes routes for listing products, viewing a single product, creating products, updating them, deleting them, and calculating stock. Search filters allow filtering by gender, brand, size, availability, price, and more.
+
+Orders API
+Users can place new orders, view their orders, and admins can update order status.
+
+Reports API
+There are endpoints for daily revenue, monthly revenue, and top-selling products.
+
+All API routes include validation and error handling.
+
+-- Setup Instructions
+
+1. Clone the Repository
+Use Git to clone the project from GitHub.
+
+2. Enter the Project Folder
+Open the webstore directory.
+
+3. Install All Required Packages
+Run npm install to download dependencies.
+
+4. Create the Environment File
+Add .env.local at the root /webstore folder and include:
+
+your PostgreSQL database URL
+
+your JWT secret key
+
+5. Import the SQL Schema
+Open pgAdmin and import all provided SQL files to build and populate the database.
+
+6. Start the Development Server
+Run npm run dev.
+The application will be available at http://localhost:3000.
+
+-- Postman Testing
+
+All endpoints in the project were tested using Postman.
+This includes:
+login
+permissions (admin, advanced_user, simple_user)
+product CRUD
+stock calculation
+discounts
+order creation
+reporting
+advanced filtering
+Testing verified that each endpoint works correctly and respects security rules.
+
+--Troubleshooting (Explained in Sentences)
+
+If the database does not connect, check the database URL and ensure PostgreSQL is running.
+If JWT tokens fail, log in again to generate a new token.
+If products fail to create, ensure that category, brand, size, and color IDs exist in lookup tables.
+If no seed data appears, re-run the SQL files.
+If orders fail to save, check that client_id is included in the request and that the user has the simple_user role.

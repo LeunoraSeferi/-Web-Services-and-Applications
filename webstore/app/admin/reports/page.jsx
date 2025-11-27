@@ -14,6 +14,11 @@ export default function AdminReportsPage() {
   const [topProducts, setTopProducts] = useState([]);
   const [message, setMessage] = useState("");
 
+  // NEW STATES FOR MONTH PICKER
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedMonthEarnings, setSelectedMonthEarnings] = useState(null);
+  const [monthError, setMonthError] = useState("");
+
   useEffect(() => {
     async function loadReports() {
       setMessage("");
@@ -52,6 +57,27 @@ export default function AdminReportsPage() {
     loadReports();
   }, []);
 
+  // --- NEW FUNCTION FOR MONTH SELECTION ---
+  function handleMonthChange(e) {
+    const value = e.target.value; // format: "YYYY-MM"
+    setSelectedMonth(value);
+    setMonthError("");
+
+    if (!value) {
+      setSelectedMonthEarnings(null);
+      return;
+    }
+
+    const found = monthly.find((m) => m.month === value);
+
+    if (found) {
+      setSelectedMonthEarnings(found.monthly_earnings);
+    } else {
+      setSelectedMonthEarnings("0.00");
+      setMonthError("No data for this month. Earnings assumed 0 €.");
+    }
+  }
+
   return (
     <div>
       <h2>Admin Reports</h2>
@@ -70,6 +96,7 @@ export default function AdminReportsPage() {
         </p>
       )}
 
+      {/* DAILY EARNINGS */}
       <section style={{ marginTop: "20px" }}>
         <h3>Daily Earnings (Today)</h3>
         <p>
@@ -77,8 +104,60 @@ export default function AdminReportsPage() {
         </p>
       </section>
 
-      <section style={{ marginTop: "30px" }}>
-        <h3>Monthly Earnings</h3>
+      {/* MONTH SELECTOR (NEW FEATURE) */}
+      <section style={{ marginTop: "40px" }}>
+        <h3>Monthly Earnings – Select Month</h3>
+
+        <p style={{ marginBottom: "10px" }}>
+          Use the month picker to view earnings for any month.
+        </p>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          {/* Month picker input */}
+          <div>
+            <label style={{ fontWeight: "600" }}>Choose Month:</label>
+            <input
+              type="month"
+              value={selectedMonth}
+              onChange={handleMonthChange}
+              style={{
+                padding: "8px 10px",
+                borderRadius: "6px",
+                border: "1px solid #ccc",
+                marginTop: "6px",
+              }}
+            />
+          </div>
+
+          {/* Earnings box */}
+          {selectedMonthEarnings !== null && (
+            <div
+              style={{
+                padding: "12px 16px",
+                border: "1px solid #e5e7eb",
+                borderRadius: "6px",
+                background: "#fafafa",
+                minWidth: "240px",
+              }}
+            >
+              <div style={{ fontWeight: "600" }}>
+                Month: {selectedMonth || "—"}
+              </div>
+              <div>
+                <strong>Earnings (€):</strong> {selectedMonthEarnings}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {monthError && (
+          <p style={{ color: "red", marginTop: "8px" }}>{monthError}</p>
+        )}
+      </section>
+
+      {/* OLD MONTHLY TABLE (KEPT FOR HISTORY / ASSIGNMENT REQUIREMENTS) */}
+      <section style={{ marginTop: "40px" }}>
+        <h3>Monthly Earnings (Full Table)</h3>
 
         {monthly.length === 0 && <p>No data available.</p>}
 
@@ -130,7 +209,8 @@ export default function AdminReportsPage() {
         )}
       </section>
 
-      <section style={{ marginTop: "30px" }}>
+      {/* TOP PRODUCTS */}
+      <section style={{ marginTop: "40px" }}>
         <h3>Top 5 Products</h3>
 
         {topProducts.length === 0 && <p>No data available.</p>}

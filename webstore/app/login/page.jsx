@@ -32,7 +32,10 @@ export default function LoginPage() {
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // ⭐ Save client_id only if available
+      // save token in cookie so middleware can read it
+      document.cookie = `token=${data.token}; path=/;`;
+
+      // Save client_id only if available
       if (data.client_id) {
         localStorage.setItem("client_id", data.client_id);
       }

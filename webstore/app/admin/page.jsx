@@ -22,15 +22,23 @@ export default function AdminDashboard() {
           gap: 16,
         }}
       >
+       
+        <a href="/admin/products" style={cardStyle}>
+          Manage Products
+        </a>
+
         <a href="/admin/orders" style={cardStyle}>
           Manage Orders
         </a>
+
         <a href="/admin/users" style={cardStyle}>
           Manage Users
         </a>
+
         <a href="/admin/reports" style={cardStyle}>
           View Reports
         </a>
+
         <a href="/admin/discounts" style={cardStyle}>
           Apply Discounts
         </a>
