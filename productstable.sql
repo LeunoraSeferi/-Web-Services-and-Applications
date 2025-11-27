@@ -143,3 +143,29 @@ VALUES (
   (SELECT id FROM colors WHERE color='Blue'),
   (SELECT id FROM gender WHERE type='Unisex')
 );
+
+DELETE FROM users WHERE username='admin2';
+
+DELETE FROM clients
+WHERE user_id = (SELECT id FROM users WHERE username='admin2');
+
+DELETE FROM order_items
+WHERE order_id IN (
+    SELECT id FROM orders
+    WHERE client_id = (
+        SELECT id FROM clients WHERE user_id = (SELECT id FROM users WHERE username='admin2')
+    )
+);
+
+
+DELETE FROM orders
+WHERE client_id = (
+    SELECT id FROM clients WHERE user_id = (SELECT id FROM users WHERE username='admin2')
+);
+
+
+DELETE FROM clients
+WHERE user_id = (SELECT id FROM users WHERE username='admin2');
+
+
+

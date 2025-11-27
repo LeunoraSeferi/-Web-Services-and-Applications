@@ -78,13 +78,13 @@ export default function CheckoutPage() {
       return;
     }
 
-    // ⭐ Save order ID for success page
+  
     localStorage.setItem("last_order_id", data.order_id);
 
     // Clear cart
     localStorage.removeItem("cart_items");
 
-    // ⭐ Redirect to success page
+
     window.location.href = "/checkout/success";
   }
 

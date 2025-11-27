@@ -99,3 +99,4 @@ JOIN order_items oi ON oi.order_id = o.id
 WHERE c.email='admin2@hotmail.com'
 GROUP BY o.id, c.full_name, o.status;
 
+select * from products;

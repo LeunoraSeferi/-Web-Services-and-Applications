@@ -239,9 +239,118 @@ UPDATE products
 SET image_url = '/images/adidaspoloshirt.jpg'
 WHERE id = 27;
 
+UPDATE products
+SET image_url = '/images/zara-blouse.jpg'
+WHERE id = 10;
 
 
+UPDATE products
+SET image_url = '/images/zara-blouse.jpg'
+WHERE id = 20;
 
 
+UPDATE products
+SET image_url = '/images/zara-blouse.jpg'
+WHERE id = 28;
 
 
+UPDATE products
+SET image_url = '/images/nikewhitetee.jpg'
+WHERE id = 11;
+
+
+UPDATE products
+SET image_url = '/images/nikewhitetee.jpg'
+WHERE id = 11;
+
+
+UPDATE products
+SET image_url = '/images/zaradenimjeans.jpg'
+WHERE id = 12;
+
+UPDATE products
+SET image_url = '/images/zaradenimjeans.jpg'
+WHERE id = 21;
+
+UPDATE products
+SET image_url = '/images/zaradenimjeans.jpg'
+WHERE id = 2;
+
+UPDATE products
+SET image_url = '/images/testtee.jpg'
+WHERE id = 36;
+
+
+UPDATE products
+SET image_url = '/images/testtee.jpg'
+WHERE id = 35;
+
+
+UPDATE products
+SET image_url = '/images/pumarunningshoes.jpg'
+WHERE id = 29;
+
+UPDATE products
+SET image_url = '/images/pumarunningshoes.jpg'
+WHERE id = 34;
+
+UPDATE products
+SET image_url = '/images/runningshoes.jpg'
+WHERE id = 37;
+
+UPDATE products
+SET image_url = '/images/runningshoes.jpg'
+WHERE id = 38;
+
+UPDATE products
+SET image_url = '/images/runningshoes.jpg'
+WHERE id = 39;
+
+UPDATE products
+SET image_url = '/images/updatedtee.jpg'
+WHERE id = 1;
+
+ALTER TABLE products
+RENAME COLUMN image TO image_url;
+
+select * from products;
+
+UPDATE products SET image_url = '/images/adidaspoloshirt.jpg' WHERE image_url LIKE '%adidaspoloshirt%';
+
+UPDATE products SET image_url = '/images/adidassocks.jpeg' WHERE image_url LIKE '%adidassocks%';
+
+UPDATE products SET image_url = '/images/adidaswindbreaker.jpg' WHERE image_url LIKE '%windbreaker%';
+
+UPDATE products SET image_url = '/images/Hmchinos.jpeg' WHERE image_url LIKE '%chinos%';
+
+UPDATE products SET image_url = '/images/hmwintercoat.jpeg' WHERE image_url LIKE '%wintercoat%';
+
+UPDATE products SET image_url = '/images/nikecap.jpg' WHERE image_url LIKE '%nikecap%' OR image_url LIKE '%Nike Cap%';
+
+UPDATE products SET image_url = '/images/nikewhitetee.jpg' WHERE image_url LIKE '%whitetee%';
+
+UPDATE products SET image_url = '/images/pumarunningshoes.jpg' WHERE image_url LIKE '%puma%';
+
+UPDATE products SET image_url = '/images/runningshoes.jpg' WHERE image_url LIKE '%runningshoes%';
+
+UPDATE products SET image_url = '/images/testtee.jpg' WHERE image_url LIKE '%testtee%';
+
+UPDATE products SET image_url = '/images/updatedtee.jpg' WHERE image_url LIKE '%updatedtee%';
+
+UPDATE products SET image_url = '/images/zara-blouse.jpg' WHERE image_url LIKE '%blouse%';
+
+UPDATE products SET image_url = '/images/zaradenimjeans.jpg' WHERE image_url LIKE '%denim%';
+
+UPDATE products SET image_url = '/images/zaraleggings.jpg' WHERE image_url LIKE '%leggings%';
+
+SELECT id, name, image_url FROM products;
+
+SELECT id, name, image_url 
+FROM products
+ORDER BY id;
+
+SELECT id, name, description, price, quantity, category_id, brand_id, size_id, color_id, gender_id, created_at, image_url
+FROM products;
+
+
+select * from clients;

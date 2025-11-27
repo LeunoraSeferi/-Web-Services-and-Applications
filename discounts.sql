@@ -1,3 +1,4 @@
+
 INSERT INTO discounts (product_id, discount_percent, start_date, end_date, active)
 VALUES (
   (SELECT id FROM products WHERE name='Nike White Tee' LIMIT 1),

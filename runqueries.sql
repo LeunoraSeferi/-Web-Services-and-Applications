@@ -1,4 +1,5 @@
---Useful queries to check data
+
+4--Useful queries to check data
 --List all products with category/brand names
 
 SELECT p.id, p.name, p.description, p.price, p.quantity,
