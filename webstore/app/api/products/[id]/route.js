@@ -1,97 +1,76 @@
+// app/api/products/route.js
 import pool from "@/lib/db";
-import { requireRole } from "@/lib/auth";
 
-// ================================
-// GET /api/products/:id
-// Public endpoint – returns a single product by ID
-// ================================
-export async function GET(request, context) {
-  const { id } = await context.params; // Extract dynamic route parameter
-  console.log("Dynamic route hit. ID =", id); // Debug log
-
+export async function GET() {
   try {
-    // Query product by ID
-    const result = await pool.query(
-      "SELECT * FROM products WHERE id=$1",
-      [id]
-    );
+    const result = await pool.query(`
+      SELECT 
+        p.id,
+        p.name,
+        p.description,
+        p.price,
+        p.quantity,
+        p.image_url,
 
-    // If no product found
-    if (result.rows.length === 0)
-      return Response.json({ message: "Not found" }, { status: 404 });
+        c.name AS category,
+        b.name AS brand,
+        s.size,
+        col.color,
+        g.type AS gender,
 
-    // Return found product
-    return Response.json(result.rows[0]);
+        -- ⭐ latest active discount
+        (
+          SELECT d.discount_percent
+          FROM discounts d
+          WHERE d.product_id = p.id
+          AND d.active = TRUE
+          AND NOW()::date BETWEEN d.start_date AND d.end_date
+          ORDER BY d.start_date DESC
+          LIMIT 1
+        ) AS discount_percent,
+
+        (
+          SELECT d.active
+          FROM discounts d
+          WHERE d.product_id = p.id
+          AND d.active = TRUE
+          AND NOW()::date BETWEEN d.start_date AND d.end_date
+          ORDER BY d.start_date DESC
+          LIMIT 1
+        ) AS discount_active,
+
+        (
+          SELECT d.start_date
+          FROM discounts d
+          WHERE d.product_id = p.id
+          AND d.active = TRUE
+          AND NOW()::date BETWEEN d.start_date AND d.end_date
+          ORDER BY d.start_date DESC
+          LIMIT 1
+        ) AS discount_start,
+
+        (
+          SELECT d.end_date
+          FROM discounts d
+          WHERE d.product_id = p.id
+          AND d.active = TRUE
+          AND NOW()::date BETWEEN d.start_date AND d.end_date
+          ORDER BY d.start_date DESC
+          LIMIT 1
+        ) AS discount_end
+
+      FROM products p
+      LEFT JOIN categories c ON p.category_id = c.id
+      LEFT JOIN brands b ON p.brand_id = b.id
+      LEFT JOIN sizes s ON p.size_id = s.id
+      LEFT JOIN colors col ON p.color_id = col.id
+      LEFT JOIN gender g ON p.gender_id = g.id
+      ORDER BY p.id;
+    `);
+
+    return Response.json(result.rows);
 
   } catch (err) {
-    // Database or server error
-    return Response.json({ error: err.message }, { status: 500 });
-  }
-}
-
-// ================================
-// PUT /api/products/:id
-// Allowed roles: admin, advanced_user, simple_user
-// Updates product fields
-// ================================
-export async function PUT(request, context) {
-  const { id } = await context.params; // Extract product ID
-
-  // Check if user role is allowed to update
-  const roleCheck = requireRole(request, [
-    "admin",
-    "advanced_user",
-    "simple_user",
-  ]);
-  if (roleCheck.error) return roleCheck.response;
-
-  try {
-    // Extract fields from request body
-    const { name, description, price, quantity } = await request.json();
-
-    // Update product in database
-    const result = await pool.query(
-      `UPDATE products
-       SET name=$1, description=$2, price=$3, quantity=$4
-       WHERE id=$5
-       RETURNING *`,
-      [name, description, price, quantity, id]
-    );
-
-    // If product does not exist
-    if (result.rows.length === 0)
-      return Response.json({ message: "Not found" }, { status: 404 });
-
-    // Return updated product
-    return Response.json(result.rows[0]);
-
-  } catch (err) {
-    // Server/database error
-    return Response.json({ error: err.message }, { status: 500 });
-  }
-}
-
-// ================================
-// DELETE /api/products/:id
-// Allowed roles: admin ONLY
-// Deletes a product by ID
-// ================================
-export async function DELETE(request, context) {
-  const { id } = await context.params; // Extract product ID
-
-  // Only admin can delete products
-  const roleCheck = requireRole(request, ["admin"]);
-  if (roleCheck.error) return roleCheck.response;
-
-  try {
-    // Delete product from database
-    await pool.query("DELETE FROM products WHERE id=$1", [id]);
-
-    // 204 = No content → successful deletion
-    return new Response(null, { status: 204 });
-
-  } catch (err) {
-    // Database or server error
     return Response.json({ error: err.message }, { status: 500 });
   }
 }

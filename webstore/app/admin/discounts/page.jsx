@@ -1,4 +1,3 @@
-// app/admin/discounts/page.jsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -25,9 +24,18 @@ export default function DiscountsPage() {
   async function loadProducts() {
     const res = await fetch("/api/products");
     const data = await res.json();
-    setProducts(data);
+
+    // Normalize fields for dropdown
+    const normalized = data.map((p) => ({
+      id: Number(p.id),
+      name: p.name,
+      price: Number(p.price),
+    }));
+
+    setProducts(normalized);
   }
 
+  //  APPLY DISCOUNT
   async function applyDiscount() {
     setMessage("");
 
@@ -61,6 +69,33 @@ export default function DiscountsPage() {
     setMessage("Discount applied successfully!");
   }
 
+  //  DELETE DISCOUNT
+  async function deleteDiscount() {
+    setMessage("");
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setMessage("You must be logged in.");
+      return;
+    }
+
+    const res = await fetch(`/api/products/${selected}/discount`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setMessage(data.error || "Failed to delete discount");
+      return;
+    }
+
+    setMessage("Discount deleted successfully!");
+  }
+
   return (
     <div>
       <h2>Apply Product Discount</h2>
@@ -73,13 +108,14 @@ export default function DiscountsPage() {
             color: "#065F46",
             borderRadius: "6px",
             marginTop: "10px",
-            maxWidth: "300px",
+            maxWidth: "350px",
           }}
         >
           {message}
         </p>
       )}
 
+      {/* PRODUCT DROPDOWN */}
       <div style={{ marginTop: 20 }}>
         <label style={{ marginRight: 10 }}>Select product:</label>
         <select
@@ -88,14 +124,16 @@ export default function DiscountsPage() {
           value={selected}
         >
           <option value="">Choose…</option>
+
           {products.map((p) => (
             <option key={p.id} value={p.id}>
-              {p.name} ({p.price}€)
+              {p.id} - {p.name} ({p.price}€)
             </option>
           ))}
         </select>
       </div>
 
+      {/* DISCOUNT INPUTS */}
       <div style={{ marginTop: 20 }}>
         <input
           type="number"
@@ -111,9 +149,7 @@ export default function DiscountsPage() {
           type="date"
           style={{ padding: 6, marginLeft: 10 }}
           value={discount.start}
-          onChange={(e) =>
-            setDiscount({ ...discount, start: e.target.value })
-          }
+          onChange={(e) => setDiscount({ ...discount, start: e.target.value })}
         />
 
         <input
@@ -124,21 +160,39 @@ export default function DiscountsPage() {
         />
       </div>
 
-      <button
-        onClick={applyDiscount}
-        disabled={!selected}
-        style={{
-          marginTop: 25,
-          background: "#111827",
-          color: "white",
-          padding: "10px 16px",
-          border: "none",
-          borderRadius: "5px",
-          cursor: "pointer",
-        }}
-      >
-        Apply Discount
-      </button>
+      {/* BUTTONS */}
+      <div style={{ marginTop: 25 }}>
+        <button
+          onClick={applyDiscount}
+          disabled={!selected}
+          style={{
+            background: "#111827",
+            color: "white",
+            padding: "10px 16px",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+            marginRight: 10,
+          }}
+        >
+          Apply Discount
+        </button>
+
+        <button
+          onClick={deleteDiscount}
+          disabled={!selected}
+          style={{
+            background: "#dc2626",
+            color: "white",
+            padding: "10px 16px",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Delete Discount
+        </button>
+      </div>
     </div>
   );
 }

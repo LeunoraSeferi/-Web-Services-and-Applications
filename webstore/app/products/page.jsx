@@ -24,11 +24,28 @@ export default function ProductsPage() {
     loadProducts();
   }, []);
 
+  // ================================
+  // LOAD PRODUCTS + NORMALIZE
+  // ================================
   async function loadProducts(query = "") {
-    const url = query ? `/api/products/search${query}` : "/api/products";
-    const res = await fetch(url);
-    const data = await res.json();
-    setProducts(data);
+    try {
+      const url = query ? `/api/products/search${query}` : "/api/products";
+      const res = await fetch(url);
+      const data = await res.json();
+
+      // ⭐ Normalize discount
+      const normalized = data.map((p) => ({
+        ...p,
+        discount_percent:
+          p.discount_percent !== null ? Number(p.discount_percent) : 0,
+        discount_active: p.discount_active === true,
+        price: Number(p.price),
+      }));
+
+      setProducts(normalized);
+    } catch (err) {
+      console.error("Error loading products:", err);
+    }
   }
 
   function buildQuery() {
@@ -51,9 +68,13 @@ export default function ProductsPage() {
     await loadProducts(query);
   }
 
+  // ================================
+  // ADD TO CART
+  // ================================
   function addToCart(productId) {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.product_id === productId);
+
       if (existing) {
         return prev.map((item) =>
           item.product_id === productId
@@ -61,10 +82,14 @@ export default function ProductsPage() {
             : item
         );
       }
+
       return [...prev, { product_id: productId, quantity: 1 }];
     });
   }
 
+  // ================================
+  // CREATE ORDER
+  // ================================
   async function handleCreateOrder() {
     setMessage("");
 
@@ -79,7 +104,6 @@ export default function ProductsPage() {
       return;
     }
 
-    // ⭐ FIXED: get client_id dynamically
     const client_id = Number(localStorage.getItem("client_id"));
     if (!client_id) {
       setMessage("Your account is not registered as a client.");
@@ -126,6 +150,7 @@ export default function ProductsPage() {
         </p>
       )}
 
+      {/* PRODUCT GRID */}
       <div
         style={{
           display: "grid",
