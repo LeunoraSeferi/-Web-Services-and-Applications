@@ -1,0 +1,66 @@
+version: "3.9"
+
+services:
+  # ==========================
+  # 1) PostgreSQL për Catalog Service
+  # ==========================
+  catalog-db:
+    image: postgres:15
+    container_name: catalog-db
+    restart: always
+    environment:
+      POSTGRES_DB: catalog_db          # emri i DB
+      POSTGRES_USER: catalog_user      # user unik
+      POSTGRES_PASSWORD: catalog_pass  # password unik
+    volumes:
+      - catalog_data:/var/lib/postgresql/data
+    networks:
+      - library-net
+
+  # ==========================
+  # 2) MySQL për User Service
+  # ==========================
+  user-db:
+    image: mysql:8.0
+    container_name: user-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: user_db          # emri i DB
+      MYSQL_USER: user_user            # user unik
+      MYSQL_PASSWORD: user_pass        # password unik
+      MYSQL_ROOT_PASSWORD: root_user   # root (admin)
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - user_data:/var/lib/mysql
+    networks:
+      - library-net
+
+  # ==========================
+  # 3) MySQL për Order Service
+  # ==========================
+  order-db:
+    image: mysql:8.0
+    container_name: order-db
+    restart: always
+    environment:
+      MYSQL_DATABASE: order_db         # emri i DB
+      MYSQL_USER: order_user           # user unik
+      MYSQL_PASSWORD: order_pass       # password unik
+      MYSQL_ROOT_PASSWORD: root_order  # root (admin)
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - order_data:/var/lib/mysql
+    networks:
+      - library-net
+
+# ==========================
+# Network dhe Volumes
+# ==========================
+networks:
+  library-net:
+    driver: bridge
+
+volumes:
+  catalog_data:
+  user_data:
+  order_data:
