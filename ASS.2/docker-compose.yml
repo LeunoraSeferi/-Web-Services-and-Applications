@@ -1,34 +1,34 @@
-version: "3.9"
+# version: "3.9"   
 
 services:
   # ==========================
-  # 1) PostgreSQL për Catalog Service
+  # 1) PostgreSQL for Catalog Service
   # ==========================
   catalog-db:
     image: postgres:15
     container_name: catalog-db
     restart: always
     environment:
-      POSTGRES_DB: catalog_db          # emri i DB
-      POSTGRES_USER: catalog_user      # user unik
-      POSTGRES_PASSWORD: catalog_pass  # password unik
+      POSTGRES_DB: catalog_db
+      POSTGRES_USER: catalog_user
+      POSTGRES_PASSWORD: catalog_pass
     volumes:
       - catalog_data:/var/lib/postgresql/data
     networks:
       - library-net
 
   # ==========================
-  # 2) MySQL për User Service
+  # 2) MySQL for User Service
   # ==========================
   user-db:
     image: mysql:8.0
     container_name: user-db
     restart: always
     environment:
-      MYSQL_DATABASE: user_db          # emri i DB
-      MYSQL_USER: user_user            # user unik
-      MYSQL_PASSWORD: user_pass        # password unik
-      MYSQL_ROOT_PASSWORD: root_user   # root (admin)
+      MYSQL_DATABASE: user_db
+      MYSQL_USER: user_user
+      MYSQL_PASSWORD: user_pass
+      MYSQL_ROOT_PASSWORD: root_user
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - user_data:/var/lib/mysql
@@ -36,25 +36,82 @@ services:
       - library-net
 
   # ==========================
-  # 3) MySQL për Order Service
+  # 3) MySQL for Order Service
   # ==========================
   order-db:
     image: mysql:8.0
     container_name: order-db
     restart: always
     environment:
-      MYSQL_DATABASE: order_db         # emri i DB
-      MYSQL_USER: order_user           # user unik
-      MYSQL_PASSWORD: order_pass       # password unik
-      MYSQL_ROOT_PASSWORD: root_order  # root (admin)
+      MYSQL_DATABASE: order_db
+      MYSQL_USER: order_user
+      MYSQL_PASSWORD: order_pass
+      MYSQL_ROOT_PASSWORD: root_order
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - order_data:/var/lib/mysql
     networks:
       - library-net
 
+  # ==========================
+  # 4) Catalog Microservice (Flask + Python)
+  # ==========================
+  catalog-service:
+    build: ./catalog-service
+    container_name: catalog-service
+    restart: always
+    depends_on:
+      - catalog-db
+    environment:
+      DB_HOST: catalog-db
+      DB_NAME: catalog_db
+      DB_USER: catalog_user
+      DB_PASS: catalog_pass
+    ports:
+      - "5001:5000"
+    networks:
+      - library-net
+
+  # ==========================
+  # 5) User Microservice (Flask + Python)
+  # ==========================
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    restart: always
+    depends_on:
+      - user-db
+    environment:
+      DB_HOST: user-db
+      DB_NAME: user_db
+      DB_USER: user_user
+      DB_PASS: user_pass
+    ports:
+      - "5002:5000"
+    networks:
+      - library-net
+
+  # ==========================
+  # 6) Order Microservice (Node.js + Express)
+  # ==========================
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    restart: always
+    depends_on:
+      - order-db
+    environment:
+      DB_HOST: order-db
+      DB_NAME: order_db
+      DB_USER: order_user
+      DB_PASS: order_pass
+    ports:
+      - "5003:3000"
+    networks:
+      - library-net
+
 # ==========================
-# Network dhe Volumes
+# Networks and Volumes
 # ==========================
 networks:
   library-net:
